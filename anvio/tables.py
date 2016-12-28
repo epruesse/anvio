@@ -192,3 +192,14 @@ samples_attribute_aliases_table_name       = 'samples_attribute_aliases'
 samples_attribute_aliases_table_structure  = ['alias', 'attribute']
 samples_attribute_aliases_table_types      = [ 'str' ,     'str'  ]
 
+
+####################################################################################################
+#
+#     TABLE FOR CITATIONS
+#
+####################################################################################################
+
+# I hope you will never need to update the structure of this table :(
+citations_table_name        = 'citations'
+citations_table_structure   = ['entry_id', 'program_name', 'version', 'doi' , 'url' , 'purpose']
+citations_table_types       = [ 'numeric',     'text'    ,   'text' , 'text', 'text',   'text' ]
