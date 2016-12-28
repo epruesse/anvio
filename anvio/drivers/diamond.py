@@ -9,6 +9,7 @@ import anvio.utils as utils
 import anvio.terminal as terminal
 
 from anvio.errors import ConfigError
+from anvio.citations import Citation
 
 
 __author__ = "A. Murat Eren"
@@ -26,14 +27,29 @@ pp = terminal.pretty_print
 
 
 class Diamond:
-    def __init__(self, query_fasta, run=run, progress=progress, num_threads=1, overwrite_output_destinations=False):
+    def __init__(self, query_fasta, run=run, progress=progress, num_threads=1, overwrite_output_destinations=False, program_name='diamond'):
         self.run = run
         self.progress = progress
 
+        self.program_name = program_name
+
+        utils.is_program_exists(self.program_name)
+
+        try:
+            self.version = utils.get_command_output_from_shell('%s --version' % self.program_name)[0].strip().split()[2]
+        except:
+            raise ConfigError, "Anvi'o tried to determine which version of %s was on the system, but failed :/\
+                                It simply run '%s --version', and things went South. Maybe you can make sure\
+                                that command works?" % (self.program_name, self.program_name)
+
+        self.citation = Citation({'program_name': self.program_name,
+                                  'version': self.version + ' x',
+                                  'doi': '10.1038/nmeth.3176',
+                                  'url': 'https://github.com/bbuchfink/diamond/releases',
+                                  'purpose': []})
+
         self.num_threads = num_threads
         self.overwrite_output_destinations = overwrite_output_destinations
-
-        utils.is_program_exists('diamond')
 
         self.tmp_dir = tempfile.gettempdir()
         self.evalue = 1e-05
@@ -91,7 +107,7 @@ class Diamond:
         self.progress.new('DIAMOND')
         self.progress.update('creating the search database (using %d thread(s)) ...' % self.num_threads)
 
-        cmd_line = ['diamond',
+        cmd_line = [self.program_name,
                     'makedb',
                     '--in', self.query_fasta,
                     '-d', self.target_db_path,
@@ -104,7 +120,7 @@ class Diamond:
         expected_output = self.target_db_path + '.dmnd'
         self.check_output(expected_output, 'makedb')
 
-        self.run.info('diamond makedb cmd', ' '.join(map(lambda x: str(x), cmd_line)), quiet=True)
+        self.run.info('%s makedb cmd' % self.program_name, ' '.join(map(lambda x: str(x), cmd_line)), quiet=True)
         self.run.info('Diamond search db', expected_output)
 
 
@@ -114,7 +130,7 @@ class Diamond:
         self.progress.new('DIAMOND')
         self.progress.update('running blastp (using %d thread(s)) ...' % self.num_threads)
 
-        cmd_line = ['diamond',
+        cmd_line = [self.program_name,
                     'blastp',
                     '-q', self.query_fasta,
                     '-d', self.target_db_path,
@@ -130,7 +146,7 @@ class Diamond:
         if self.evalue:
             cmd_line.extend(['--evalue', self.evalue])
 
-        self.run.info('diamond blastp cmd', ' '.join(map(lambda x: str(x), cmd_line)), quiet=True)
+        self.run.info('%s blastp cmd' % self.program_name, ' '.join(map(lambda x: str(x), cmd_line)), quiet=True)
 
         utils.run_command(cmd_line, self.run.log_file_path)
 
@@ -146,13 +162,13 @@ class Diamond:
         self.progress.new('DIAMOND')
         self.progress.update('generating tabular output (using %d thread(s)) ...' % self.num_threads)
 
-        cmd_line = ['diamond',
+        cmd_line = [self.program_name,
                     'view',
                     '-a', self.search_output_path + '.daa',
                     '-o', self.tabular_output_path,
                     '-p', self.num_threads]
 
-        self.run.info('diamond view cmd', ' '.join(map(lambda x: str(x), cmd_line)), quiet=True)
+        self.run.info('%s view cmd' % self.program_name, ' '.join(map(lambda x: str(x), cmd_line)), quiet=True)
 
         utils.run_command(cmd_line, self.run.log_file_path)
 
