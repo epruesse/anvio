@@ -109,6 +109,8 @@ var mouse_event_origin_y = 0;
 
 var description;
 var descriptionEditor;
+
+var collapsedNodes = []; 
 //---------------------------------------------------------
 //  Init
 //---------------------------------------------------------
@@ -518,7 +520,6 @@ function populateColorDicts() {
                     samples_categorical_colors[sample_layer_name] = {};
                     samples_categorical_stats[sample_layer_name] = {};
                 }
-
                 for (_sample in samples_information_dict)
                 {
                     var _category_name = samples_information_dict[_sample][sample_layer_name];
