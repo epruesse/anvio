@@ -2236,7 +2236,7 @@ function draw_tree(settings) {
                         if (layers[pindex]['height'] == 0)
                             continue;
 
-                        if(isStackBar)
+                        if(isStackBar && !q.collapsed)
                         {
                             var offset = 0;
                             for (var j=0; j < layerdata_dict[q.label][pindex].length; j++)
@@ -2357,7 +2357,7 @@ function draw_tree(settings) {
                         if (layers[pindex]['height'] == 0)
                             continue;
 
-                        if(isStackBar)
+                        if(isStackBar && !q.collapsed)
                         {
                             var offset = 0;
                             for (var j=0; j < layerdata_dict[q.label][pindex].length; j++)
