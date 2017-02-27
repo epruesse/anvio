@@ -25,7 +25,7 @@ class Centrifuge(Parser):
 
         self.min_hit_score = 250
 
-        files_expected = {'report': 'centrifuge_report.tsv', 'hits': 'centrifuge_hits.tsv'}
+        files_expected = {'report': input_file_paths[0], 'hits': input_file_paths[1]}
 
         files_structure = {'report':
                                 {'col_names': ['t_species', 'taxon_id', 'f1', 'f2', 'f3', 'f4', 'f5'],
